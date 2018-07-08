@@ -5,15 +5,36 @@
 html {
   font-size: 14px;
   font-size: 2vh;
-  font-family:   -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
+    Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
 }
 
 body {
-  background: #212121;
+  background: #000;
   color: white;
 }
 
-html, body {
+:not(:root):-webkit-full-screen::backdrop {
+  background: #000;
+}
+
+:fullscreen {
+  background: #000;
+  color: white;
+}
+
+:-webkit-full-screen {
+  background: #000;
+  color: white;
+}
+
+:-moz-full-screen {
+  background: #000;
+  color: white;
+}
+
+html,
+body {
   height: 100%;
   padding: 0;
   margin: 0;
@@ -35,7 +56,6 @@ kbd {
   font-family: inherit;
   /* color: black; */
 }
-
 
 #viewer {
   display: flex;
@@ -59,25 +79,6 @@ img {
   /* margin: 0 auto; */
   /* display: block; */
 }
-#dropzone {
-  text-align: center;
-  width: 300px;
-  height: 100px;
-  margin: 10px;
-  padding: 10px;
-  border: 4px dashed red;
-  border-radius: 10px;
-}
-
-#boxtitle {
-  display: table-cell;
-  vertical-align: middle;
-  text-align: center;
-  color: black;
-  font: bold 2em 'Arial', sans-serif;
-  width: 300px;
-  height: 100px;
-}
 
 body {
   /* display: flex; */
@@ -92,7 +93,7 @@ body {
   position: sticky;
   bottom: 0;
   /* width: 100%; */
-  /* background: rgba(0, 0, 0, 0.5); */
+  background: rgba(0, 0, 0, 0.3);
   text-align: center;
   font-family: 'ubuntu mono', monospace;
   padding: 10px 0;
@@ -103,10 +104,7 @@ html:-moz-full-screen,
 html:-webkit-full-screen,
 html:fullscreen {
   cursor: none;
-}
-
-
-pre {
+  background: #212121;
 }
 
 main {
@@ -116,4 +114,20 @@ main {
   flex-grow: 1;
 }
 
-input[type="file"] {position: absolute;top: 0;left: 0;width: 100%;height: 100%;z-index: 10;opacity: 0;}
+input[type='file'] {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  opacity: 0;
+}
+
+.no-cursor {
+  cursor: none;
+}
+
+li {
+  position: relative;
+}

@@ -1,8 +1,11 @@
 const root = document.documentElement;
 const viewer = document.getElementById('viewer');
 const filePicker = document.getElementById('filePicker');
+const zip = new window.JSZip();
+
+let jumpTo = [];
 const assets = [];
-const starred = [];
+const starred = new Set();
 
 let index = -1;
 let url = null;
@@ -44,7 +47,7 @@ async function show() {
   }
   viewer.innerHTML = '';
   viewer.dataset.filename = img.alt;
-  if (starred.includes(index)) viewer.dataset.filename += ' ⭐️';
+  if (starred.has(item)) viewer.dataset.filename += ' ⭐️';
   viewer.appendChild(img);
 }
 
@@ -88,6 +91,18 @@ filePicker.onchange = () => {
   sort();
   show();
 };
+
+let cursorTimer = null;
+
+function showCursor() {
+  root.classList.remove('no-cursor');
+  clearTimeout(cursorTimer);
+  cursorTimer = setTimeout(() => {
+    root.classList.add('no-cursor');
+  }, 3000);
+}
+
+root.addEventListener('mousemove', showCursor);
 
 root.addEventListener(
   'drop',
@@ -138,25 +153,77 @@ function sort() {
 root.addEventListener('dblclick', toggleFullScreen, false);
 root.addEventListener('click', next, false);
 
-root.addEventListener('keydown', e => {
-  if (e.keyCode === 37) {
-    prev();
-  } else if (e.keyCode === 39) {
+root.addEventListener('keydown', async e => {
+  const item = assets[index];
+  // 0-9 numeric
+  if (e.keyCode >= 48 && e.keyCode <= 57) {
+    jumpTo.push(e.keyCode - 48);
+    document.title = `Goto ${jumpTo.join('')}`;
+    return;
+  }
+
+  // enter
+  if (e.keyCode === 13 && jumpTo.length > 0) {
+    index = parseInt(jumpTo.join(''), 10) - 2;
+    nextImage = null;
     next();
-  } else if (e.keyCode === 70) {
-    toggleFullScreen();
-  } else if (e.keyCode === 83) {
-    // s = star
-    if (starred.includes(index)) {
-      // remove
-      starred.splice(starred.indexOf(index), 1);
+  }
+
+  // all other keys reset the numeric search (including enter)
+  jumpTo.length = 0;
+
+  // left cursor
+  if (e.keyCode === 37) {
+    return prev();
+  }
+
+  // right cursor
+  if (e.keyCode === 39) {
+    return next();
+  }
+
+  // f = toggle fullscreen
+  if (e.keyCode === 70) {
+    return toggleFullScreen();
+  }
+
+  // s = star
+  if (e.keyCode === 83) {
+    // if in list, remove
+    if (starred.has(item)) {
+      starred.remove(item);
+      viewer.dataset.filename = viewer.dataset.filename.slice(0, -2);
     } else {
-      starred.push(index);
+      starred.add(item);
+      viewer.dataset.filename += ' ⭐️';
     }
-    show();
-  } else if (e.keyCode === 68) {
-    // d = download
-    const item = assets[index];
+  }
+
+  // d = download
+  if (e.keyCode === 68) {
+    if (starred.size > 0) {
+      // download a zip file
+      await Promise.all(
+        Array.from(starred).map(item => {
+          let p = Promise.resolve(item);
+          if (typeof item.file === 'function') {
+            p = new Promise(resolve => item.file(resolve));
+          }
+          return p.then(file => zip.file(file.name, file));
+        })
+      );
+
+      const scrBlob = new Blob([await zip.generateAsync({ type: 'blob' })], {
+        'content-type': 'application/binary',
+      });
+      const url = URL.createObjectURL(scrBlob);
+      const a = document.createElement('a');
+      a.download = 'photos.zip';
+      a.href = url;
+      a.click();
+      URL.revokeObjectURL(url);
+      return;
+    }
     item.file(file => {
       const scrBlob = new Blob([file], {
         'content-type': 'application/binary',
@@ -169,8 +236,10 @@ root.addEventListener('keydown', e => {
       a.click();
       URL.revokeObjectURL(url);
     });
-  } else if (e.keyCode === 65) {
-    // a = auto play
+  }
+
+  // a = auto play
+  if (e.keyCode === 65) {
     if (timer) {
       clearInterval(timer);
     } else {

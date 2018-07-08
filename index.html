@@ -11,21 +11,23 @@
 <body>
   <div id="viewer">
     <main>
-      <input type="file" id="filePicker" webkitdirectory multiple>
       <h1>IMAGE VIEWER</h1>
-      <p>For viewing directories of images can ideal for casting to a Chromecast</p>
+      <p><em>For viewing directories of images, and ideal for casting to a Chromecast</em></p>
       <p>Usage:</p>
       <ul>
-        <li>Drag and drop directories on to this window</li>
+        <li>Drag and drop directories (or click here) to browse images<input type="file" id="filePicker" webkitdirectory multiple title="click to add folder" value="Or click to browse"></li>
         <li>Cursor keys <kbd>⇠</kbd> and <kbd>⇢</kbd> to navigate previous and next</li>
         <li>Click anywhere to goto next</li>
-        <li>Double click for fullscreen – <kbd>esc</kbd> to return to window</li>
-        <li><kbd>d</kbd> to download the current image</li>
+        <li>Double click for fullscreen or <kbd>f</kbd> – <kbd>esc</kbd> to return to window</li>
+        <li><kbd>:numeric:</kbd> + <kbd>enter</kbd> to jump to image</li>
+        <li><kbd>d</kbd> download the current image</li>
+        <li><kbd>s</kbd> star an image to download a zip of all starred images</li>
         <li><kbd>a</kbd> to toggle autoplay</li>
       </ul>
       </p>
     </main>
   </div>
+  <script src="jszip.min.js"></script>
   <script src="index.js"></script>
 </body>
 
