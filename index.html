@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Image viewer</title>
+  <link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+  <div id="viewer">
+    <main>
+      <input type="file" id="filePicker" webkitdirectory multiple>
+      <h1>IMAGE VIEWER</h1>
+      <p>For viewing directories of images can ideal for casting to a Chromecast</p>
+      <p>Usage:</p>
+      <ul>
+        <li>Drag and drop directories on to this window</li>
+        <li>Cursor keys <kbd>⇠</kbd> and <kbd>⇢</kbd> to navigate previous and next</li>
+        <li>Click anywhere to goto next</li>
+        <li>Double click for fullscreen – <kbd>esc</kbd> to return to window</li>
+        <li><kbd>d</kbd> to download the current image</li>
+        <li><kbd>a</kbd> to toggle autoplay</li>
+      </ul>
+      </p>
+    </main>
+  </div>
+  <script src="index.js"></script>
+</body>
+
+</html>
