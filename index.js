@@ -67,6 +67,19 @@ function toggleFullScreen() {
   }
 }
 
+async function loadEntries(reader) {
+  return new Promise(resolve => {
+    // note: returns 100 at a time
+    reader.readEntries(async entries => {
+      if (entries.length === 0) {
+        return resolve(null);
+      }
+      const promises = entries.map(async entry => await scanFiles(entry));
+      Promise.all(promises).then(() => resolve(entries));
+    });
+  });
+}
+
 async function scanFiles(item) {
   if (viewable(item)) {
     assets.push(item);
@@ -74,13 +87,12 @@ async function scanFiles(item) {
   }
 
   if (item.isDirectory) {
-    return new Promise(resolve => {
-      item.createReader().readEntries(async entries => {
-        Promise.all(entries.map(async entry => await scanFiles(entry))).then(
-          resolve
-        );
-      });
-    });
+    const reader = item.createReader();
+
+    let res = null;
+    do {
+      res = await loadEntries(reader);
+    } while (res !== null);
   }
 }
 
@@ -146,7 +158,9 @@ async function prev() {
 
 function sort() {
   assets.sort((a, b) => {
-    return a.name < b.name ? -1 : 1;
+    const aName = a.fullPath || a.name;
+    const bName = b.fullPath || b.name;
+    return aName < bName ? -1 : 1;
   });
 }
 
